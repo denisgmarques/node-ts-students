@@ -3,6 +3,24 @@ const FACTOR_DIGIT_2 = 11;
 const MAX_DIGITS_1 = 9;
 const MAX_DIGITS_2 = 10;
 
+export default class CpfValidator {
+  cpf: string = "";
+
+  constructor (cpf: string) {
+    this.cpf = cpf;
+  }
+
+  validate() : boolean {
+    this.cpf = extractDigits(this.cpf);
+    if (isInvalidLength(this.cpf)) return false;
+    if (isBlocked(this.cpf)) return false;
+    const digit1 = calculateDigit(this.cpf, FACTOR_DIGIT_1, MAX_DIGITS_1);
+    const digit2 = calculateDigit(this.cpf, FACTOR_DIGIT_2, MAX_DIGITS_2);
+    let calculatedCheckDigit = `${digit1}${digit2}`;
+    return getCheckDigit(this.cpf) == calculatedCheckDigit;
+  }
+}
+
 function extractDigits(cpf: string) {
   return cpf.replace(/\D/g, "");
 }
@@ -32,21 +50,3 @@ function getCheckDigit(cpf: string) {
   return cpf.slice(9);
 }
 
-
-export default class CpfValidator {
-  cpf: string = "";
-
-  constructor (cpf: string) {
-    this.cpf = cpf;
-  }
-
-  validate() : boolean {
-    this.cpf = extractDigits(this.cpf);
-    if (isInvalidLength(this.cpf)) return false;
-    if (isBlocked(this.cpf)) return false;
-    const digit1 = calculateDigit(this.cpf, FACTOR_DIGIT_1, MAX_DIGITS_1);
-    const digit2 = calculateDigit(this.cpf, FACTOR_DIGIT_2, MAX_DIGITS_2);
-    let calculatedCheckDigit = `${digit1}${digit2}`;
-    return getCheckDigit(this.cpf) == calculatedCheckDigit;
-  }
-}

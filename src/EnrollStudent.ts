@@ -1,38 +1,21 @@
-import { textChangeRangeIsUnchanged } from "typescript";
-import CpfValidator from "./CpfValidator";
 import Student from "./Student";
 
 export default class EnrollStudent {
-  students: Student[] = [];
+  enrollments: any[] = [];
 
-  execute(enrollmentRequest: Student) {
-    this.validateName(enrollmentRequest.name)
-    this.validateCpf(enrollmentRequest.cpf)
-    enrollmentRequest.cpf = this.extractDigits(enrollmentRequest.cpf)
-    this.duplicateKey(enrollmentRequest)
-    this.students.push(enrollmentRequest)
+  execute(enrollmentRequest: any) {
+    this.store(enrollmentRequest)
   }
 
-  duplicateKey(student: Student) {
-    if (this.students.filter((st) => st.cpf === student.cpf).length > 0) {
-      throw new Error(`CPF ${student.cpf} already exist`)
+  store(enrollmentRequest: any) {
+    let student = new Student(enrollmentRequest.student.name, enrollmentRequest.student.cpf)
+    this.checkDuplicateKey(student)
+    this.enrollments.push(enrollmentRequest)
+  }
+
+  checkDuplicateKey(student: Student) {
+    if (this.enrollments.find((enroll) => new Student(enroll.student.name, enroll.student.cpf).cpf.value === student.cpf.value)) {
+      throw new Error('Should not enroll duplicated student')
     }
   }
-
-  validateName(name: string) : void {
-    if (!/^([A-Za-z]+ )+([A-Za-z])+$/.test(name)) {
-      throw new Error("Invalid student name")
-    }
-  }
-
-  validateCpf(cpf: string) : void {
-    if (!new CpfValidator(cpf).validate()) {
-      throw new Error("Invalid student CPF")
-    }
-  }
-
-  extractDigits(cpf: string) {
-    return cpf.replace(/\D/g, "");
-  }
-
 }

@@ -1,9 +1,12 @@
+import Cpf from './types/Cpf'
+import Name from './types/Name'
+
 export default class Student {
-  name: string;
-  cpf: string;
+  name: Name;
+  cpf: Cpf;
 
   constructor (name: string, cpf: string) {
-    this.name = name;
-    this.cpf = cpf;
+    this.name = new Name(name);
+    this.cpf = new Cpf(cpf);
   }
 }

@@ -1,33 +1,57 @@
 import EnrollStudent from "./EnrollStudent";
-import Student from "./Student";
 
 let enrollStudent = new EnrollStudent();
 
 test("Student Ok", function () {
-  let student = new Student("Mary Lee", "358.356.800-15")
-  expect(enrollStudent.execute(student));
+  let request = { 
+    student: {
+      name: "Mary Lee", 
+      cpf: "358.356.800-15"
+    }
+  }
+  expect(enrollStudent.execute(request));
 });
 
 test("Bad CPF", function () {
-  let student = new Student("John Way", "123.456.789-99")
-  expect(() => enrollStudent.execute(student)).toThrow(new Error("Invalid student CPF"))
+  let request = { 
+    student: {
+      name: "John Way", 
+      cpf: "123.456.789-99"
+    }
+  }
+  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll without valid student cpf"))
 });
 
 test("Bad Name", function () {
-  let student = new Student("G", "777.740.360-59")
-  expect(() => enrollStudent.execute(student)).toThrow(new Error("Invalid student name"))
+  let request = { 
+    student: {
+      name: "G", 
+      cpf: "777.740.360-59"
+    }
+  }
+  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll without valid student name"))
 });
 
 test("Duplicated CPF", function () {
-  let student = new Student("John Way Jr", "358.356.800-15")
-  expect(() => enrollStudent.execute(student)).toThrow(new Error("CPF 35835680015 already exist"))
+  let request = { 
+    student: {
+      name: "John Way Jr", 
+      cpf: "358.356.800-15"
+    }
+  }
+  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll duplicated student"))
 });
 
 test("Student Ok", function () {
-  let student = new Student("Mia Tommy", "108.008.610-27")
-  expect(enrollStudent.execute(student));
+  let request = { 
+    student: {
+      name: "Mia Tommy", 
+      cpf: "108.008.610-27"
+    }
+  }
+  expect(enrollStudent.execute(request));
 });
 
 test("Number of students OK", function () {
-  expect(enrollStudent.students.length).toBe(2);
+  expect(enrollStudent.enrollments.length).toBe(2);
 });
