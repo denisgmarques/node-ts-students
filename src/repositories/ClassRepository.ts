@@ -4,17 +4,23 @@ export default class ClassRepository {
           level: "EM",
           module: "3",
           code: "A",
-          capacity: 10
-      }
+          capacity: 3
+      },
+      {
+        level: "EF2",
+        module: "6",
+        code: "A",
+        capacity: 3
+    }
   ]
 
   findAll (): any[] {
     return this.data;
   }
 
-  findByCode (code: string): any {
-    return this.data.find((clas) => {
-      clas.code === code
+  findByLevelAndModuleAndCode (level: string, module: string, code: string): any {
+    return this.data.find((it) => {
+      return it.level === level && it.module === module && it.code === code
     })
   }
 }

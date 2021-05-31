@@ -90,9 +90,9 @@ export default class ModuleRepository {
     return this.data;
   }
 
-  findByCode (code: string): any {
+  findByLevelAndCode (level: string, code: string): any {
     return this.data.find((module) => {
-      module.code === code
+      return module.level === level && module.code === code
     })
   }
 }

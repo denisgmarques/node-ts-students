@@ -20,7 +20,7 @@ export default class LevelRepository {
 
   findByCode (code: string): any {
     return this.data.find((level) => {
-      level.code === code
+      return level.code === code
     })
   }
 }
