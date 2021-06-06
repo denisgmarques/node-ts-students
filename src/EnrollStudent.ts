@@ -1,13 +1,13 @@
-import EnrollmentRepository from './repositories/EnrollmentRepository'
+import EnrollmentRepository from './repositories/EnrollmentRepositoryMemory'
 
 export default class EnrollStudent {
-  enrollmentRepository: EnrollmentRepository = new EnrollmentRepository();
+  enrollmentRepository: EnrollmentRepository;
 
-  execute(enrollmentRequest: any) {
-    this.store(enrollmentRequest)
+  constructor (enrollmentRepository: EnrollmentRepository) {
+    this.enrollmentRepository = enrollmentRepository;
   }
 
-  store(enrollmentRequest: any) {
+  execute(enrollmentRequest: any) {
     this.enrollmentRepository.add(enrollmentRequest);
   }
 }

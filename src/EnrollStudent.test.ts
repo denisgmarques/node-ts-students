@@ -1,6 +1,15 @@
 import EnrollStudent from "./EnrollStudent";
+import EnrollmentRepositoryMemory from "./repositories/EnrollmentRepositoryMemory";
+import ModuleRepositoryMemory from "./repositories/ModuleRepositoryMemory";
+import ClassRepositoryMemory from "./repositories/ClassRepositoryMemory";
 
-let enrollStudent = new EnrollStudent();
+
+let enrollStudent: EnrollStudent;
+
+const moduleRepository = new ModuleRepositoryMemory();
+const classRepository = new ClassRepositoryMemory();
+const enrollmentRepository = new EnrollmentRepositoryMemory(moduleRepository, classRepository);
+enrollStudent = new EnrollStudent(enrollmentRepository); 
 
 test("Student Ok 1", function () {
   let request = { 
@@ -138,6 +147,38 @@ test("Class overload", function () {
     class: "A"
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll student over class capacity"))
+});
+
+
+// Should not enroll after que end of the class
+test("Ended Class", function () {
+  let request = { 
+    student: {
+      name: "Lumpa Kurki", 
+      cpf: "808.381.200-59",
+      birthDate: "1989-01-12"
+    },
+    level: "EF1",
+    module: "1",
+    class: "A"
+  }
+  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll after que end of the class"))
+});
+
+
+// Should not enroll after 25% of the start of the class
+test("Class completed over 25%", function () {
+  let request = { 
+    student: {
+      name: "Giulliam Mey", 
+      cpf: "730.142.880-47",
+      birthDate: "1977-11-09"
+    },
+    level: "EF1",
+    module: "2",
+    class: "A"
+  }
+  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll after 25% of the start of the class"))
 });
 
 // Last test - how many student ok
