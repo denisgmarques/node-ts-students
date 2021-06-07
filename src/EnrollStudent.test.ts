@@ -3,7 +3,6 @@ import EnrollmentRepositoryMemory from "./repositories/EnrollmentRepositoryMemor
 import ModuleRepositoryMemory from "./repositories/ModuleRepositoryMemory";
 import ClassRepositoryMemory from "./repositories/ClassRepositoryMemory";
 
-
 let enrollStudent: EnrollStudent;
 
 const moduleRepository = new ModuleRepositoryMemory();
@@ -20,7 +19,8 @@ test("Student Ok 1", function () {
     },
     level: "EM",
     module: "3",
-    class: "A"
+    class: "A",
+    installments: 12
   }
   expect(enrollStudent.execute(request));
 });
@@ -34,7 +34,8 @@ test("Bad CPF", function () {
     },
     level: "EM",
     module: "3",
-    class: "A"
+    class: "A",
+    installments: 12
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll without valid student cpf"))
 });
@@ -48,7 +49,8 @@ test("Bad Name", function () {
     },
     level: "EM",
     module: "3",
-    class: "A"
+    class: "A",
+    installments: 12
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll without valid student name"))
 });
@@ -62,7 +64,8 @@ test("Duplicated CPF", function () {
     },
     level: "EM",
     module: "3",
-    class: "A"
+    class: "A",
+    installments: 12
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll duplicated student"))
 });
@@ -76,7 +79,8 @@ test("Student Ok 2", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A"
+    class: "A",
+    installments: 10
   }
   expect(enrollStudent.execute(request));
 });
@@ -90,7 +94,8 @@ test("Student Ok 3", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A"
+    class: "A",
+    installments: 12
   }
   expect(enrollStudent.execute(request));
 });
@@ -104,7 +109,8 @@ test("Student Ok 4", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A"
+    class: "A",
+    installments: 12
   }
   expect(enrollStudent.execute(request));
 });
@@ -129,7 +135,8 @@ test("Very young student", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A"
+    class: "A",
+    installments: 12
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll student below minimum age"))
 });
@@ -144,7 +151,8 @@ test("Class overload", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A"
+    class: "A",
+    installments: 10
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll student over class capacity"))
 });
@@ -160,7 +168,8 @@ test("Ended Class", function () {
     },
     level: "EF1",
     module: "1",
-    class: "A"
+    class: "A",
+    installments: 12
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll after que end of the class"))
 });
@@ -176,7 +185,8 @@ test("Class completed over 25%", function () {
     },
     level: "EF1",
     module: "2",
-    class: "A"
+    class: "A",
+    installments: 6
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll after 25% of the start of the class"))
 });

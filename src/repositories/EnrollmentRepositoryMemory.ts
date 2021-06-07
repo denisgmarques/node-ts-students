@@ -2,6 +2,7 @@ import Student from '../entities/Student';
 import ModuleRepository from './ModuleRepositoryMemory';
 import ClassRepository from './ClassRepositoryMemory';
 import EnrollmentRepository from './EnrollmentRepository'
+import EnrollmentBO from '../businessrules/EnrollmentBO'
 
 export default class EnrollmentRepositoryMemory implements EnrollmentRepository {
   moduleRepository: ModuleRepository;
@@ -42,58 +43,35 @@ export default class EnrollmentRepositoryMemory implements EnrollmentRepository 
   add (enrollment: any) {
     let student = new Student(enrollment.student.name, enrollment.student.cpf, enrollment.student.birthDate)
 
+    // Instance of enrollment Business Object
+    const enrollmentBO = new EnrollmentBO(this.classRepository, this.moduleRepository);
+    
     // Check minimal age
-    let module = this.moduleRepository.findByLevelAndCode(enrollment.level, enrollment.module);
-
-    if (module) {
-      if (module.minimumAge > student.age) {
-        throw new Error("Should not enroll student below minimum age");
-      }
-    } else {
-      throw new Error("Invalid module");
-    }
+    enrollmentBO.checkMinimalAge(enrollment, student);
 
     // Class Business Rules   
-    let clas = this.classRepository.findByLevelAndModuleAndCode(enrollment.level, enrollment.module, enrollment.class);
+    enrollmentBO.checkFinishedClass(enrollment);
 
-    if (clas) {
-      // Should not enroll after que end of the class
-      let today = new Date();
-      let startClassDate = new Date(clas.start_date);
-      let endClassDate = new Date(clas.end_date);
+    // Should not enroll after 25% of the start of the class
+    enrollmentBO.checkStartedClassCompletedPercentage(enrollment);
 
-      if (today > endClassDate) {
-        throw new Error("Should not enroll after que end of the class");
-      }
+    // Check class capacity
+    enrollmentBO.checkClassCapacity(enrollment, this.countStudentInTheClass(enrollment));
 
-      // Should not enroll after 25% of the start of the class
-      if (startClassDate < today) {
-        let totalDays = this.getDaysFromPeriod(startClassDate, endClassDate);
-        let passedDays = this.getDaysFromPeriod(startClassDate, today);
+    // Generate Invoices
+    enrollment.invoces = enrollmentBO.generateInvoices(enrollment);
+    console.log(enrollment.invoces);
 
-        if (passedDays / totalDays > 0.25) {
-          throw new Error("Should not enroll after 25% of the start of the class");
-        }
-      }
+    // extractOnlyDigits
+    enrollment.student.cpf = student.cpf.value;
 
-      // Check class capacity
-      if (this.countStudentInTheClass(enrollment) >= clas.capacity) {
-        throw new Error("Should not enroll student over class capacity");
-      }
-    } else {
-      throw new Error("Invalid class");
-    }
-
-    enrollment.student.cpf = student.cpf.value; // extractOnlyDigits
+    // Check existing enrollment (The same CPF)
     this.checkDuplicateKey(enrollment);
-    enrollment.id = this.generateEnrollmentId(enrollment);
-    this.data.push(enrollment);
-  }
 
-  private getDaysFromPeriod (start: Date, end: Date) {
-    // Take the difference between the dates and divide by milliseconds per day.
-    // Round to nearest whole number to deal with DST.
-    return Math.round((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+    // Generate Enrollment ID
+    enrollment.id = this.generateEnrollmentId(enrollment);
+    
+    this.data.push(enrollment);
   }
 
   private checkDuplicateKey (enrollment: any) {
