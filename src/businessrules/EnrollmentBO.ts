@@ -77,7 +77,7 @@ export default class ClassBO {
       let installmentValue = installmentBaseValue;
       total += installmentValue;
 
-      // Calculate the round diference on the last one installment
+      // Calculate the rounded diference on the last one installment
       if (i === enrollment.installments) {
         const difference = Math.round((module.price - total) * 100) / 100;
         installmentValue += difference;
