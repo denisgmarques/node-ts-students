@@ -7,7 +7,7 @@ export default class EnrollStudent {
     this.enrollmentRepository = enrollmentRepository;
   }
 
-  execute(enrollmentRequest: any) {
-    this.enrollmentRepository.add(enrollmentRequest);
+  execute(enrollmentRequest: any): any {
+    return this.enrollmentRepository.add(enrollmentRequest);
   }
 }

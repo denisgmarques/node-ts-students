@@ -100,7 +100,7 @@ test("Student Ok 3", function () {
   expect(enrollStudent.execute(request));
 });
 
-test("Student Ok 4", function () {
+test("Student Ok 4 with 12 installments invoices", function () {
   let request = { 
     student: {
       name: "Jessica Turner", 
@@ -112,7 +112,9 @@ test("Student Ok 4", function () {
     class: "A",
     installments: 12
   }
-  expect(enrollStudent.execute(request));
+
+  let result = enrollStudent.execute(request);
+  expect(result.invoices).toHaveLength(12);
 });
 
 // Should generate enrollment code

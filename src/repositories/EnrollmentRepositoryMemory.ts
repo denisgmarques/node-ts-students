@@ -40,7 +40,7 @@ export default class EnrollmentRepositoryMemory implements EnrollmentRepository 
     return this.data.length;
   }
 
-  add (enrollment: any) {
+  add (enrollment: any): any {
     let student = new Student(enrollment.student.name, enrollment.student.cpf, enrollment.student.birthDate)
 
     // Instance of enrollment Business Object
@@ -59,8 +59,7 @@ export default class EnrollmentRepositoryMemory implements EnrollmentRepository 
     enrollmentBO.checkClassCapacity(enrollment, this.countStudentInTheClass(enrollment));
 
     // Generate Invoices
-    enrollment.invoces = enrollmentBO.generateInvoices(enrollment);
-    console.log(enrollment.invoces);
+    enrollment.invoices = enrollmentBO.generateInvoices(enrollment);
 
     // extractOnlyDigits
     enrollment.student.cpf = student.cpf.value;
@@ -72,6 +71,8 @@ export default class EnrollmentRepositoryMemory implements EnrollmentRepository 
     enrollment.id = this.generateEnrollmentId(enrollment);
     
     this.data.push(enrollment);
+
+    return enrollment;
   }
 
   private checkDuplicateKey (enrollment: any) {
