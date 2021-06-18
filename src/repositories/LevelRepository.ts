@@ -1,5 +1,7 @@
-export default interface LevelRepository {
-  findAll (): any[]
+import Level from '../entities/Level';
 
-  findByCode (code: string): any
+export default interface LevelRepository {
+  findAll (): Level[]
+
+  findByCode (code: string): Level
 }

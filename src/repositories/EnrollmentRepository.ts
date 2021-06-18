@@ -1,7 +1,7 @@
 export default interface EnrollmentRepository {
   findAll (): any[]
 
-  findById (id: string): any
+  findByCode (code: string): any
 
   findByStudentCpf (cpf: string): any
 
@@ -11,5 +11,5 @@ export default interface EnrollmentRepository {
   
   add (enrollment: any): void
 
-  countStudentInTheClass (enrollment: any): number
+  countStudentInTheClass (enrollment: any): any
 }

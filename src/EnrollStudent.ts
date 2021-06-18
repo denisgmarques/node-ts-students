@@ -1,4 +1,4 @@
-import EnrollmentRepository from './repositories/EnrollmentRepositoryMemory'
+import EnrollmentRepository from './repositories/EnrollmentRepository'
 
 export default class EnrollStudent {
   enrollmentRepository: EnrollmentRepository;

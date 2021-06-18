@@ -1,13 +1,15 @@
 import EnrollStudent from "./EnrollStudent";
 import EnrollmentRepositoryMemory from "./repositories/EnrollmentRepositoryMemory";
+import LevelRepositoryMemory from "./repositories/LevelRepositoryMemory";
 import ModuleRepositoryMemory from "./repositories/ModuleRepositoryMemory";
-import ClassRepositoryMemory from "./repositories/ClassRepositoryMemory";
+import ClassroomRepositoryMemory from "./repositories/ClassroomRepositoryMemory";
 
 let enrollStudent: EnrollStudent;
 
+const levelRepository = new LevelRepositoryMemory();
 const moduleRepository = new ModuleRepositoryMemory();
-const classRepository = new ClassRepositoryMemory();
-const enrollmentRepository = new EnrollmentRepositoryMemory(moduleRepository, classRepository);
+const classroomRepository = new ClassroomRepositoryMemory();
+const enrollmentRepository = new EnrollmentRepositoryMemory(levelRepository, moduleRepository, classroomRepository);
 enrollStudent = new EnrollStudent(enrollmentRepository); 
 
 test("Student Ok 1", function () {
@@ -19,7 +21,7 @@ test("Student Ok 1", function () {
     },
     level: "EM",
     module: "3",
-    class: "A",
+    classroom: "A",
     installments: 12
   }
   expect(enrollStudent.execute(request));
@@ -34,7 +36,7 @@ test("Bad CPF", function () {
     },
     level: "EM",
     module: "3",
-    class: "A",
+    classroom: "A",
     installments: 12
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll without valid student cpf"))
@@ -49,7 +51,7 @@ test("Bad Name", function () {
     },
     level: "EM",
     module: "3",
-    class: "A",
+    classroom: "A",
     installments: 12
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll without valid student name"))
@@ -64,7 +66,7 @@ test("Duplicated CPF", function () {
     },
     level: "EM",
     module: "3",
-    class: "A",
+    classroom: "A",
     installments: 12
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll duplicated student"))
@@ -79,7 +81,7 @@ test("Student Ok 2", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A",
+    classroom: "A",
     installments: 10
   }
   expect(enrollStudent.execute(request));
@@ -94,7 +96,7 @@ test("Student Ok 3", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A",
+    classroom: "A",
     installments: 12
   }
   expect(enrollStudent.execute(request));
@@ -109,7 +111,7 @@ test("Student Ok 4 with 12 installments invoices", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A",
+    classroom: "A",
     installments: 12
   }
 
@@ -119,12 +121,12 @@ test("Student Ok 4 with 12 installments invoices", function () {
 
 // Should generate enrollment code
 test("Get first enrollment by id", function () {
-  expect(enrollStudent.enrollmentRepository.findById('2021EM3A0001')).not.toBeUndefined();
+  expect(enrollStudent.enrollmentRepository.findByCode('2021EM3A0001')).not.toBeUndefined();
 });
 
 // Should generate enrollment code
 test("Get second enrollment by id", function () {
-  expect(enrollStudent.enrollmentRepository.findById('2021EF26A0001')).not.toBeUndefined();
+  expect(enrollStudent.enrollmentRepository.findByCode('2021EF26A0001')).not.toBeUndefined();
 });
 
 // Should not enroll student below minimum age
@@ -137,10 +139,10 @@ test("Very young student", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A",
+    classroom: "A",
     installments: 12
   }
-  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll student below minimum age"))
+  expect(() => enrollStudent.execute(request)).toThrow(new Error("Student below minimum age"))
 });
 
 // Should not enroll student over class capacity
@@ -153,7 +155,7 @@ test("Class overload", function () {
     },
     level: "EF2",
     module: "6",
-    class: "A",
+    classroom: "A",
     installments: 10
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll student over class capacity"))
@@ -170,10 +172,10 @@ test("Ended Class", function () {
     },
     level: "EF1",
     module: "1",
-    class: "A",
+    classroom: "A",
     installments: 12
   }
-  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll after que end of the class"))
+  expect(() => enrollStudent.execute(request)).toThrow(new Error("Class is already finished"))
 });
 
 
@@ -187,10 +189,10 @@ test("Class completed over 25%", function () {
     },
     level: "EF1",
     module: "2",
-    class: "A",
+    classroom: "A",
     installments: 6
   }
-  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll after 25% of the start of the class"))
+  expect(() => enrollStudent.execute(request)).toThrow(new Error("Class is already started"))
 });
 
 // Last test - how many student ok
