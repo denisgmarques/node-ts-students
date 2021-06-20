@@ -31,7 +31,7 @@ export default class ClassroomRepositoryMemory implements ClassroomRepository {
         level: "EF2",
         module: "6",
         code: "A",
-        capacity: 3,
+        capacity: 1,
         startDate: new Date("2021-05-11"),
         endDate: new Date("2021-10-30")
       })

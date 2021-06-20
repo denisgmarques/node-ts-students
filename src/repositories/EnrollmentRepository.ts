@@ -1,15 +1,15 @@
+import Enrollment from "../entities/Enrollment";
+
 export default interface EnrollmentRepository {
-  findAll (): any[]
+  findAll (): Enrollment[]
 
-  findByCode (code: string): any
+  findByCode (code: string): Enrollment | undefined
 
-  findByStudentCpf (cpf: string): any
+  findByStudentCpf (cpf: string): Enrollment | undefined
 
   existByCpf (cpf: string): boolean
 
   count (): number
   
   add (enrollment: any): void
-
-  countStudentInTheClass (enrollment: any): any
 }

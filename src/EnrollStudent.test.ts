@@ -1,16 +1,11 @@
 import EnrollStudent from "./EnrollStudent";
-import EnrollmentRepositoryMemory from "./repositories/EnrollmentRepositoryMemory";
-import LevelRepositoryMemory from "./repositories/LevelRepositoryMemory";
-import ModuleRepositoryMemory from "./repositories/ModuleRepositoryMemory";
-import ClassroomRepositoryMemory from "./repositories/ClassroomRepositoryMemory";
+import RepositoryMemoryFactory from "./repositories/RepositoryMemoryFactory";
 
 let enrollStudent: EnrollStudent;
 
-const levelRepository = new LevelRepositoryMemory();
-const moduleRepository = new ModuleRepositoryMemory();
-const classroomRepository = new ClassroomRepositoryMemory();
-const enrollmentRepository = new EnrollmentRepositoryMemory(levelRepository, moduleRepository, classroomRepository);
-enrollStudent = new EnrollStudent(enrollmentRepository); 
+beforeEach(function () {
+    enrollStudent = new EnrollStudent(new RepositoryMemoryFactory()); 
+});
 
 test("Student Ok 1", function () {
   let request = { 
@@ -69,6 +64,11 @@ test("Duplicated CPF", function () {
     classroom: "A",
     installments: 12
   }
+
+  // Add first
+  enrollStudent.execute(request);
+  
+  // Add duplicated
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll duplicated student"))
 });
 
@@ -121,12 +121,22 @@ test("Student Ok 4 with 12 installments invoices", function () {
 
 // Should generate enrollment code
 test("Get first enrollment by id", function () {
-  expect(enrollStudent.enrollmentRepository.findByCode('2021EM3A0001')).not.toBeUndefined();
-});
+  let request = { 
+    student: {
+      name: "John Way Jr", 
+      cpf: "358.356.800-15",
+      birthDate: "2002-03-12"
+    },
+    level: "EM",
+    module: "3",
+    classroom: "A",
+    installments: 12
+  }
 
-// Should generate enrollment code
-test("Get second enrollment by id", function () {
-  expect(enrollStudent.enrollmentRepository.findByCode('2021EF26A0001')).not.toBeUndefined();
+  // Add student
+  enrollStudent.execute(request);
+
+  expect(enrollStudent.enrollmentRepository.findByCode('2021EM3A0001')).not.toBeUndefined();
 });
 
 // Should not enroll student below minimum age
@@ -147,7 +157,21 @@ test("Very young student", function () {
 
 // Should not enroll student over class capacity
 test("Class overload", function () {
-  let request = { 
+  let request1 = { 
+    student: {
+      name: "Jessica Turner", 
+      cpf: "837.112.030-35",
+      birthDate: "2003-10-11"
+    },
+    level: "EF2",
+    module: "6",
+    classroom: "A",
+    installments: 12
+  }
+
+  enrollStudent.execute(request1);
+
+  let request2 = { 
     student: {
       name: "Jika Lyra", 
       cpf: "039.137.020-08",
@@ -158,7 +182,7 @@ test("Class overload", function () {
     classroom: "A",
     installments: 10
   }
-  expect(() => enrollStudent.execute(request)).toThrow(new Error("Should not enroll student over class capacity"))
+  expect(() => enrollStudent.execute(request2)).toThrow(new Error("Should not enroll student over class capacity"))
 });
 
 
@@ -193,9 +217,4 @@ test("Class completed over 25%", function () {
     installments: 6
   }
   expect(() => enrollStudent.execute(request)).toThrow(new Error("Class is already started"))
-});
-
-// Last test - how many student ok
-test("Number of students OK", function () {
-  expect(enrollStudent.enrollmentRepository.count()).toBe(4);
 });
